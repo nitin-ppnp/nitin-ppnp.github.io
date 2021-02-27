@@ -1,4 +1,4 @@
-@def title = "Jigyasa Landing"
+@def title = "Jigyasa"
 @def hasmath = true
 @def hascode = true
 <!-- Note: by default hasmath == true and hascode == false. You can change this in
