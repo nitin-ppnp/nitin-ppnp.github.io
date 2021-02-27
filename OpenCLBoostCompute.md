@@ -118,4 +118,4 @@ event_object.get_profiling_info<cl_ulong>(boost::compute::event::profiling_comma
 ```
 This information can be dumped in a log file and can be read using a python or matlab script for analysis.
 
-\comment
+\utterances
