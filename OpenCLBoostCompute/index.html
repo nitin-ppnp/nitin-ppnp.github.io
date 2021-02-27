@@ -1,0 +1,87 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/libs/highlight/github.min.css"> <link rel=stylesheet  href="/css/franklin.css"> <link rel=stylesheet  href="/css/poole_lanyon.css"> <link rel=stylesheet  href="/css/adjust.css"> <link rel=stylesheet  href="/css/nitin_custom.css"> <link rel=icon  href="/assets/favicon.png"> <title>OpenCLBoostCompute</title> <input type=checkbox  class=sidebar-checkbox  id=sidebar-checkbox > <div class=sidebar  id=sidebar > <div class=sidebar-item > <p>Jigyasa</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/">Home</a> <a class="sidebar-nav-item " href="/OpenCLBoostCompute/">OpenCL with Boost Compute</a> </nav> <div class=sidebar-item > <p>&copy; Nitin Saini.</p> </div> </div> <!-- Wrap is the content to shift when toggling the sidebar. We wrap the content to avoid any CSS collisions with our real content. --> <div class=wrap > <div class=masthead > <div class=container > <h3 class=masthead-title > <a href="/" title=Home >Jigyasa </a> <small>Computer vision, Macine learning, Brain and Intelligence</small> </h3> </div> </div> <div class="container content"> <div class=franklin-content ><h1 id=developing_opencl_programs_with_boost_compute ><a href="#developing_opencl_programs_with_boost_compute" class=header-anchor >Developing OpenCL programs with Boost Compute</a></h1> <div class=franklin-toc ><ol><li><a href="#developing_opencl_programs_with_boost_compute">Developing OpenCL programs with Boost Compute</a><ol><li><a href="#basic_steps_of_an_opencl_program">Basic Steps of an OpenCL program</a><ol><li><a href="#get_the_device">Get the Device</a><li><a href="#create_a_context_with_this_device">Create a context with this device</a><li><a href="#create_a_queue_with_this_context_and_device">Create a queue with this context and device</a><li><a href="#create_kernel_source">Create kernel source</a><li><a href="#build_kernel_source_to_get_program">Build kernel source to get program</a><li><a href="#get_kernel_out_of_the_built_program">Get kernel out of the built program</a><li><a href="#perform_memory_transfer_to_the_device">Perform memory transfer to the device</a><li><a href="#link_the_kernel_arguments_to_the_device_buffers">Link the kernel arguments to the device buffers</a><li><a href="#enqueue_the_kernel_execution">Enqueue the kernel execution</a><li><a href="#transfer_output_of_the_kernel_from_device_to_host_memory">Transfer output of the kernel from device to host memory</a></ol><li><a href="#debugging_and_profiling_opencl_programs">Debugging and Profiling OpenCL programs</a><ol><li><a href="#debugging_an_opencl_kernel">Debugging an OpenCL kernel</a><li><a href="#double_support_on_opencl_version_11">Double support on OpenCL version &lt;&#61; 1.1</a><li><a href="#profiling_opencl_programs">Profiling OpenCL programs</a><ol><li><a href="#opencl_profilers_by_vendors">OpenCL profilers by vendors</a><li><a href="#in-built_profiling_commands_in_opencl">In-built profiling commands in OpenCL</a></ol></ol></ol></ol></div> <p>Boost Compute is a C&#43;&#43; wrapper library for the OpenCL. It is a C&#43;&#43; interface to the computing platforms supporting OpenCL. More information at http://www.boost.org/doc/libs/1<em>65</em>1/libs/compute/doc/html/index.html#boost_compute.introduction</p> <h2 id=basic_steps_of_an_opencl_program ><a href="#basic_steps_of_an_opencl_program" class=header-anchor >Basic Steps of an OpenCL program</a></h2> <h3 id=get_the_device ><a href="#get_the_device" class=header-anchor >Get the Device</a></h3> <pre><code class="julia hljs">boost::compute::device device =  compute::system::default_device();</code></pre>
+<h3 id=create_a_context_with_this_device ><a href="#create_a_context_with_this_device" class=header-anchor >Create a context with this device</a></h3>
+<pre><code class="julia hljs">boost::compute::context context(device);</code></pre>
+<h3 id=create_a_queue_with_this_context_and_device ><a href="#create_a_queue_with_this_context_and_device" class=header-anchor >Create a queue with this context and device</a></h3>
+<pre><code class="julia hljs">boost::compute::command_queue queue(context,device,compute::command_queue::enable_profiling);</code></pre>
+<p>The third argument is used to enable the profiling for this queue. This let the user to use the inbuilt OpenCL profiling commands to extract the profiling information for any event of this queue. If the profiling is not desired, just skip the 3rd argument and provide only first two.</p>
+<h3 id=create_kernel_source ><a href="#create_kernel_source" class=header-anchor >Create kernel source</a></h3>
+<pre><code class="julia hljs"><span class=hljs-keyword >const</span> char vertex_kernel_source[] = <span class=hljs-string >&quot;  __kernel void vertex_kernel_func( arg 1, arg 2, ...) { %%Kernel Body%% }&quot;</span>;</code></pre>
+<p>The kernel source is a string with all the kernel functions inside. The kernel source can contain multiple OpenCL kernels. A kernel function is like a normal C function with &quot;__kernel&quot; keyword in front of the function definition. The kernel body uses OpenCL C language which is much like ANSI C. &#40;OpenCL C specifications at https://www.khronos.org/registry/OpenCL/specs/opencl-2.0-openclc.pdf&#41;</p>
+<h3 id=build_kernel_source_to_get_program ><a href="#build_kernel_source_to_get_program" class=header-anchor >Build kernel source to get program</a></h3>
+<pre><code class="julia hljs">boost::compute::program vertex_program = compute::program::build_with_source(vertex_kernel_source,context);</code></pre>
+<p>The OpenCL kernels are buiild during the runtime. Build the kernel source and get the built program.</p>
+<h3 id=get_kernel_out_of_the_built_program ><a href="#get_kernel_out_of_the_built_program" class=header-anchor >Get kernel out of the built program</a></h3>
+<pre><code class="julia hljs">boost::compute::kernel vertex_kernel(vertex_program, <span class=hljs-string >&quot;vertex_kernel_func&quot;</span>);</code></pre>
+<p>The first argument to the kernel constructor is the built program and the second argument is a string with the name of the kernel.</p>
+<h3 id=perform_memory_transfer_to_the_device ><a href="#perform_memory_transfer_to_the_device" class=header-anchor >Perform memory transfer to the device</a></h3>
+<pre><code class="julia hljs">boost::compute::copy_async(p_weight,p_weight+nb_vertices*nb_joints,p_weight_CL.<span class=hljs-keyword >begin</span>(),queue);          // <span class=hljs-keyword >for</span> asynchronous memory transfer (transfer happens independent of the computation on device)
+
+boost::compute::copy(p_weight,p_weight+nb_vertices*nb_joints,p_weight_CL.<span class=hljs-keyword >begin</span>(),queue);                // <span class=hljs-keyword >for</span> synchronous memory transfer (the device doesn&#x27;t start the next computation until the memory transfer is finished)</code></pre>
+<p>The input data to the kernel must be first transferred to the device&#39;s  memory from the host memory. The first argument of the copy function is the starting pointer to the source memory. The second argument is the end pointer to the source memory. The third argument is the starting pointer to the destination memory. The iterators can also be used.</p>
+<h3 id=link_the_kernel_arguments_to_the_device_buffers ><a href="#link_the_kernel_arguments_to_the_device_buffers" class=header-anchor >Link the kernel arguments to the device buffers</a></h3>
+<pre><code class="julia hljs">vertex_kernel.set_arg(<span class=hljs-number >0</span>,p_weight_CL);</code></pre>
+<p>Once the data is on the device memory, it is need to be mapped to the arguments of the kernel. The first argument of the &quot;set<em>arg&quot; function is a number which represent the index of the argument in the kernel definition. For example, &quot;0&quot; represent the first argument &#40;&quot;arg 1&quot;&#41; in the kernel function definition. The second argument of the &quot;set</em>arg&quot; function is the variable in the device&#39;s memory.</p>
+<h3 id=enqueue_the_kernel_execution ><a href="#enqueue_the_kernel_execution" class=header-anchor >Enqueue the kernel execution</a></h3>
+<pre><code class="julia hljs">boost::compute::event kernel_exec = queue.enqueue_1d_range_kernel(vertex_kernel,<span class=hljs-number >0</span>,nb_vertices,<span class=hljs-number >0</span>);</code></pre>
+<p>Now we have the kernel and the arguments in the device&#39;s memory and hence we can enqueue the kernel computation. The first argument of enqueue function is the kernel. The second, third and fourth argument is the global work offset, global work size and local work size respectively.</p>
+<h3 id=transfer_output_of_the_kernel_from_device_to_host_memory ><a href="#transfer_output_of_the_kernel_from_device_to_host_memory" class=header-anchor >Transfer output of the kernel from device to host memory</a></h3>
+<pre><code class="julia hljs">boost::compute::copy_async(output_row_CL.<span class=hljs-keyword >begin</span>(),output_row_CL.<span class=hljs-keyword >end</span>(),output_row,queue)</code></pre>
+<h2 id=debugging_and_profiling_opencl_programs ><a href="#debugging_and_profiling_opencl_programs" class=header-anchor >Debugging and Profiling OpenCL programs</a></h2>
+<h3 id=debugging_an_opencl_kernel ><a href="#debugging_an_opencl_kernel" class=header-anchor >Debugging an OpenCL kernel</a></h3>
+<p>The OpenCL kernel is build during the run-time. If the kernel build fails then you can debug it by defining a macro BOOST<em>COMPUTE</em>DEBUG<em>KERNEL</em>COMPILATION at the start of your program. This will flush the build logs into the stdout.</p>
+<h3 id=double_support_on_opencl_version_11 ><a href="#double_support_on_opencl_version_11" class=header-anchor >Double support on OpenCL version &lt;&#61; 1.1</a></h3>
+<p>The OpenCL version &lt;&#61; 1.1  does not support the &quot;double&quot; type by default. One needs to enable the cl<em>khr</em>fp64 extension in the OpenCL kernel to use the double data type. It can be enabled by adding following line at the start of the kernel source file:</p>
+<pre><code class="julia hljs"><span class=hljs-comment >#pragma OPENCL EXTENSION cl_khr_fp64 : enable</span></code></pre>
+<h3 id=profiling_opencl_programs ><a href="#profiling_opencl_programs" class=header-anchor >Profiling OpenCL programs</a></h3>
+<p>Profiling in OpenCL can be done in two ways.</p>
+<ul>
+<li><p>OpenCL profilers provided by different vendors.</p>
+
+<li><p>In-built profiling commands in OpenCL.</p>
+
+</ul>
+<h4 id=opencl_profilers_by_vendors ><a href="#opencl_profilers_by_vendors" class=header-anchor >OpenCL profilers by vendors</a></h4>
+<p><strong>Nvidia</strong></p>
+<p>Most of the Nvidia devices has the OpenCL capability, but there is no OpenCL profiling tool from Nvidia.</p>
+<p><strong>AMD</strong></p>
+<p>CodeXL is the best tool for OpenCL debugging and profiling but it works only on the AMD devices &#40;CPUs and GPUs&#41;. CodeXL is available freely.</p>
+<p><strong>Intel</strong></p>
+<p>Intel VTune Amplifier is the profiling tool from Intel, but like AMD, it works only on the Intel devices &#40;CPUs and GPUs&#41;. Intel VTune Amplifier is not free but a trial version for 30 days is there.</p>
+<h4 id=in-built_profiling_commands_in_opencl ><a href="#in-built_profiling_commands_in_opencl" class=header-anchor >In-built profiling commands in OpenCL</a></h4>
+<p>Since there is no profiling tool that can be used independent of the computing platform, one can use in-built profiling commands provided in OpenCL specifications. This is the best option if one wants to do profiling on Nvidia devices, or the program uses multiple devices from different vendors.</p>
+<p>To enable the in-built OpenCL profiling, one should create the profiling enabled command queue &#40;see the command queue creation in the section &quot;Basic steps of an OpenCL program&quot;&#41;. The profiling in OpenCL is done by using the event objects. An event in OpenCL is an object that communicates the status of OpenCL commands &#40;queuing a kernel execution, memory operations&#41;. The event is object returned during the call to the OpenCL queuing or memory transfer commands.</p>
+<pre><code class="julia hljs">boost::compute::future&lt;void&gt; memcpy_out = compute::copy_async(output_row_CL.<span class=hljs-keyword >begin</span>(),output_row_CL.<span class=hljs-keyword >end</span>(),output_row,queue);                    // Memory transfer event
+ 
+boost::compute::event kernel_exec = queue.enqueue_1d_range_kernel(vertex_kernel,<span class=hljs-number >0</span>,nb_vertices,<span class=hljs-number >0</span>);                                           // Kernel execution event</code></pre>
+<p>Here, we get the event objects &quot;memcpy<em>out&quot; and &quot;kenrel</em>exec&quot; for memory transfer and kernel execution respectively. The event object has all the profiling information about the event and can be extracted from it.</p>
+<p>There are four types of profiling information for the OpenCL event.</p>
+<ul>
+<li><p>CL<em>PROFILING</em>COMMAND<em>QUEUED &#40;cl</em>ulong&#41; - A 64-bit value that describes the current device time counter in nanoseconds when the command identified by event is enqueued in a command-queue by the host.</p>
+
+<li><p>CL<em>PROFILING</em>COMMAND<em>SUBMIT &#40;cl</em>ulong&#41; - A 64-bit value that describes the current device time counter in nanoseconds when the command identified by event that has been enqueued is submitted by the host to the device associated with the command queue.</p>
+
+<li><p>CL<em>PROFILING</em>COMMAND<em>START &#40;cl</em>ulong&#41; - A 64-bit value that describes the current device time counter in nanoseconds when the command identified by event starts execution on the device.</p>
+
+<li><p>CL<em>PROFILING</em>COMMAND<em>END &#40;cl</em>ulong&#41; - A 64-bit value that describes the current device time counter in nanoseconds when the command identified by event has finished execution on the device.   The desired profiling information is collected from the object using the function &quot;get<em>profiling</em>info&quot; as shown:</p>
+
+</ul>
+<pre><code class="julia hljs">event_object.get_profiling_info&lt;cl_ulong&gt;(boost::compute::event::profiling_command_queued);
+event_object.get_profiling_info&lt;cl_ulong&gt;(boost::compute::event::profiling_command_submit);
+event_object.get_profiling_info&lt;cl_ulong&gt;(boost::compute::event::profiling_command_start);
+event_object.get_profiling_info&lt;cl_ulong&gt;(boost::compute::event::profiling_command_end);</code></pre>
+<p>This information can be dumped in a log file and can be read using a python or matlab script for analysis.</p>
+<div class=page-foot >
+  <div class=copyright >
+    &copy; Nitin Saini. Last modified: February 27, 2021. Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a>.
+  </div>
+</div>
+</div>
+      </div>  
+    </div> 
+    
+    
+        
+
+
+    
+    <label for=sidebar-checkbox  class=sidebar-toggle ></label>

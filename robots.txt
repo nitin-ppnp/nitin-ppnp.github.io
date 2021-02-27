@@ -1,0 +1,4 @@
+Sitemap: https://nitin-ppnp.github.io/sitemap.xml
+
+User-agent: *
+Disallow:
