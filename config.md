@@ -27,3 +27,14 @@ For instance:
     @@
   @@
 }
+\newcommand{\comment}{
+  ~~~
+  <script src="https://utteranc.es/client.js"
+        repo="https://github.com/nitin-ppnp/nitin-ppnp.github.io/"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+  </script>
+  ~~~
+}
