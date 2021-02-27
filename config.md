@@ -30,7 +30,7 @@ For instance:
 \newcommand{\utterances}{
   ~~~
   <script src="https://utteranc.es/client.js"
-        repo="nitin-ppnp/nitin-ppnp.github.io/"
+        repo="nitin-ppnp/nitin-ppnp.github.io"
         issue-term="pathname"
         theme="github-light"
         crossorigin="anonymous"
