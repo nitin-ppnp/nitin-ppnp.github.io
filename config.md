@@ -4,7 +4,7 @@ website.
 The website_* must be defined for the RSS to work
 -->
 @def website_title = "Jigyasa"
-@def website_descr = "Computer vision, Macine learning, Brain and Intelligence"
+@def website_descr = "Computer vision, Machine learning, Brain and Intelligence"
 @def website_url   = "https://nitin-ppnp.github.io/"
 
 @def author = "Nitin Saini"
