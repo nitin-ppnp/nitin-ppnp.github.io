@@ -5,12 +5,13 @@
 the config file by setting hasmath = false for instance and just setting it to true
 where appropriate -->
 
+<!-- ,
+  (name="AMASSContacts", pic="smplconts/card_img.gif", title="Generating contact points for AMASS dataset",link="/AMASSContacts/") -->
 
 ```julia:postcards
 #hideall
 posts = [
-  (name="OpenCLBoostCompute", pic="BoostCompute.png", title="OpenCL using Boost Compute",link="/OpenCLBoostCompute/"),
-  (name="AMASSContacts", pic="smplconts/card_img.gif", title="Generating contact points for AMASS dataset",link="/AMASSContacts/")
+  (name="OpenCLBoostCompute", pic="BoostCompute.png", title="OpenCL using Boost Compute",link="/OpenCLBoostCompute/")
   ]
 
 "@@cards @@row" |> println
