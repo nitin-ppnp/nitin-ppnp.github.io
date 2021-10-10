@@ -3,4 +3,8 @@
   \card{OpenCL using Boost Compute}{BoostCompute.png}{/OpenCLBoostCompute/}
 @@
 
+@@column
+  \card{Generating contact points for AMASS dataset}{smplconts/card_img.gif}{/AMASSContacts}
+@@
+
 @@ @@
